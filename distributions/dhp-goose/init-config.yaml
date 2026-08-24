@@ -1,0 +1,13 @@
+# DHP Goose first-run defaults.
+# Environment variables still take precedence over this file.
+GOOSE_PROVIDER: ollama
+GOOSE_MODEL: qwen3:1.7b
+OLLAMA_HOST: http://localhost:11434
+GOOSE_DISABLE_TELEMETRY: "1"
+
+# DHP policy markers consumed by launcher/recipes.
+DHP_GOOSE_POLICY: absolute-zero
+DHP_GOOSE_PAID_PROVIDERS: "disabled"
+DHP_GOOSE_SKILL_ROUTING: "on-demand"
+DHP_GOOSE_MEMORY_MODE: "local"
+DHP_GOOSE_VERIFY_BEFORE_COMPLETE: "true"
