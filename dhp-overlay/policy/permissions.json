@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "policyId": "dhp-goose-permissions",
+  "defaults": {
+    "conversation": "chat",
+    "readOnlyResearch": "smart_approve",
+    "isolatedWorkspace": "smart_approve",
+    "repositoryWrite": "approve",
+    "deployment": "approve",
+    "credentialAccess": "approve",
+    "productionWrite": "approve",
+    "destructive": "deny"
+  },
+  "constraints": {
+    "loopbackAcpByDefault": true,
+    "requireAcpSecret": true,
+    "publicUnauthenticatedAcp": false,
+    "directDhpDatabaseAccess": false,
+    "websiteBusinessOwnership": true
+  }
+}

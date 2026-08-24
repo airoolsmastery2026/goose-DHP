@@ -3,8 +3,11 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const { resolve } = require('path');
 
 const isLinuxVulkanBuild = process.env.GOOSE_DESKTOP_LINUX_VARIANT === 'vulkan';
+const isDhpDesktopBuild = process.env.DHP_DESKTOP_BUILD === '1';
+const dhpDesktopName = process.env.DHP_DESKTOP_NAME || 'DHP Goose';
 
 let cfg = {
+  ...(isDhpDesktopBuild ? { name: dhpDesktopName, executableName: 'DHP-Goose' } : {}),
   asar: true,
   extraResource: ['src/bin', 'src/images', 'src/app-update.yml'],
   icon: 'src/images/icon',
@@ -74,6 +77,24 @@ module.exports = {
     },
   ],
   makers: [
+    ...(isDhpDesktopBuild
+      ? [
+          {
+            name: '@electron-forge/maker-squirrel',
+            platforms: ['win32'],
+            config: {
+              name: 'DHPGoose',
+              title: dhpDesktopName,
+              authors: 'Dai Hai Phat',
+              description: 'DHP Goose Desktop - zero-dollar local AI execution runtime',
+              exe: 'DHP-Goose.exe',
+              setupExe: 'DHP-Goose-Setup.exe',
+              setupIcon: 'src/images/icon.ico',
+              noMsi: true,
+            },
+          },
+        ]
+      : []),
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin', 'win32', 'linux'],
