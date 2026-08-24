@@ -1,0 +1,35 @@
+name: DHP Goose Validate
+
+on:
+  pull_request:
+    paths:
+      - 'distributions/dhp-goose/**'
+      - 'ui/desktop/src/components/settings/extensions/bundled-extensions.json'
+      - '.github/workflows/dhp-goose-validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Validate DHP distribution
+        shell: powershell
+        run: .\distributions\dhp-goose\tests\validate.ps1
+
+      - name: Validate bundled extensions JSON
+        shell: powershell
+        run: |
+          $json = Get-Content .\ui\desktop\src\components\settings\extensions\bundled-extensions.json -Raw | ConvertFrom-Json
+          $required = @('developer','memory','skills','todo','summon')
+          foreach ($name in $required) {
+            $extension = $json | Where-Object { $_.name -eq $name }
+            if (-not $extension) { throw "Missing extension: $name" }
+            if (-not $extension.enabled) { throw "Extension is not enabled: $name" }
+          }
+          Write-Host 'Bundled extension policy: PASS'
