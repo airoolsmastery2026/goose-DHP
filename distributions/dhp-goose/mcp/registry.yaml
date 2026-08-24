@@ -1,0 +1,49 @@
+version: 1
+policy: least-tools
+paid_providers: disabled
+
+builtin:
+  - name: developer
+    enabled: true
+    purpose: files-shell-code
+  - name: memory
+    enabled: true
+    purpose: durable-lessons-and-preferences
+  - name: skills
+    enabled: true
+    purpose: on-demand-skill-loading
+  - name: todo
+    enabled: true
+    purpose: multi-step-task-state
+  - name: summon
+    enabled: true
+    purpose: bounded-subagent-delegation
+
+optional:
+  - name: computercontroller
+    enabled: false
+    approval: explicit
+    reason: desktop control should be task-scoped
+  - name: autovisualiser
+    enabled: false
+    approval: explicit
+    reason: load only for visualization work
+
+custom_mcp:
+  default_enabled: false
+  requirements:
+    - pinned-version-or-reviewed-source
+    - explicit-purpose
+    - no-secrets-in-config
+    - local-or-verified-zero-cost-by-default
+    - capability-minimization
+
+routing:
+  research:
+    tools: [memory, skills, todo]
+  engineering:
+    tools: [developer, memory, skills, todo, summon]
+  dhp-business:
+    tools: [memory, skills, todo]
+  dhp-digital-studio:
+    tools: [developer, memory, skills, todo, summon]
