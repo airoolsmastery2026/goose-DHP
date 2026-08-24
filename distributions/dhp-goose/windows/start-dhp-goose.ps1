@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 $InstallRoot = Join-Path $env:LOCALAPPDATA "DHP-Goose"
 $Workspace = Join-Path $HOME "DHP-Goose-Workspace"
 $RuntimeEnv = Join-Path $InstallRoot "runtime.env"
+$AdditionalConfig = Join-Path $InstallRoot "init-config.yaml"
 
 function Resolve-Goose {
     $command = Get-Command goose -ErrorAction SilentlyContinue
@@ -30,6 +31,9 @@ if (-not $env:GOOSE_MODEL) { $env:GOOSE_MODEL = "qwen3:1.7b" }
 if (-not $env:OLLAMA_HOST) { $env:OLLAMA_HOST = "http://localhost:11434" }
 $env:GOOSE_DISABLE_TELEMETRY = "1"
 $env:DHP_GOOSE_POLICY = "absolute-zero"
+if (Test-Path $AdditionalConfig) {
+    $env:GOOSE_ADDITIONAL_CONFIG_FILES = $AdditionalConfig
+}
 
 $GooseExe = Resolve-Goose
 $OllamaExe = Resolve-Ollama
@@ -82,4 +86,4 @@ Write-Host "DHP Goose Desktop is not installed; starting the verified CLI runtim
 Write-Host "Provider: $env:GOOSE_PROVIDER | Model: $env:GOOSE_MODEL | Policy: $env:DHP_GOOSE_POLICY"
 Write-Host "Workspace: $Workspace"
 Write-Host ""
-& $GooseExe session
+& $GooseExe session --with-builtin "developer,memory,skills,todo,summon"
