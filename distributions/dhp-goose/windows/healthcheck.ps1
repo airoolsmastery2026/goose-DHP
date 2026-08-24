@@ -12,10 +12,21 @@ if (-not $Goose) {
     $Candidate = Join-Path $HOME ".local\bin\goose.exe"
     if (Test-Path $Candidate) { $Goose = Get-Item $Candidate }
 }
-Add-Check "Goose CLI" ($null -ne $Goose) $(if ($Goose) { $Goose.Source ?? $Goose.FullName } else { "not found" })
+
+$GooseDetail = "not found"
+if ($Goose) {
+    if ($Goose.PSObject.Properties.Name -contains "Source" -and $Goose.Source) {
+        $GooseDetail = $Goose.Source
+    } else {
+        $GooseDetail = $Goose.FullName
+    }
+}
+Add-Check "Goose CLI" ($null -ne $Goose) $GooseDetail
 
 $Ollama = Get-Command ollama -ErrorAction SilentlyContinue
-Add-Check "Ollama" ($null -ne $Ollama) $(if ($Ollama) { (& ollama --version | Out-String).Trim() } else { "not found" })
+$OllamaDetail = "not found"
+if ($Ollama) { $OllamaDetail = (& ollama --version | Out-String).Trim() }
+Add-Check "Ollama" ($null -ne $Ollama) $OllamaDetail
 
 $ApiReady = $false
 try {
