@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "policyId": "dhp-zero-dollar",
+  "absoluteZero": true,
+  "paidApiAutoUse": false,
+  "autoTopUp": false,
+  "meteredFallback": false,
+  "telemetryEnabledByDefault": false,
+  "providerSelection": {
+    "allowUnverifiedFreeCloud": false,
+    "allowPaidApi": false,
+    "preferExistingLocalRuntime": true,
+    "allowAutomaticModelDownload": false,
+    "stopWhenNoZeroCostRoute": true
+  },
+  "localRuntimeOrder": [
+    "ollama-compatible",
+    "llama-cpp-openai-compatible",
+    "configured-local-openai-compatible"
+  ],
+  "runtimeLimits": {
+    "defaultParallelModelRequests": 1,
+    "defaultContextTokens": 4096,
+    "maximumContextTokensWithoutBenchmark": 8192
+  },
+  "secrets": {
+    "stripPaidProviderKeysBeforeLaunch": true,
+    "neverCommitCredentials": true
+  }
+}
