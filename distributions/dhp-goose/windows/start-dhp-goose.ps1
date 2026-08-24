@@ -62,11 +62,15 @@ if ($Models -notmatch [regex]::Escape($env:GOOSE_MODEL)) {
 New-Item -ItemType Directory -Force -Path $Workspace | Out-Null
 Set-Location $Workspace
 
-$DesktopCandidates = @(
+$BundledDesktop = Get-ChildItem -Path (Join-Path $InstallRoot "desktop") -Filter "Goose.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+$DesktopCandidates = @()
+if ($BundledDesktop) { $DesktopCandidates += $BundledDesktop.FullName }
+$DesktopCandidates += @(
     (Join-Path $env:LOCALAPPDATA "Programs\Goose\Goose.exe"),
     (Join-Path $env:LOCALAPPDATA "Goose\Goose.exe"),
     (Join-Path $env:ProgramFiles "Goose\Goose.exe")
-) | Where-Object { $_ -and (Test-Path $_) }
+)
+$DesktopCandidates = @($DesktopCandidates | Where-Object { $_ -and (Test-Path $_) })
 
 if ($DesktopCandidates.Count -gt 0) {
     Write-Host "Starting DHP Goose Desktop..."
