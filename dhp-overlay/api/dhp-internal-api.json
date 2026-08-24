@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "apiId": "dhp-internal-runtime",
+  "sourceService": "goose-desktop",
+  "authentication": {
+    "type": "bearer",
+    "sourceServiceHeader": "X-DHP-Source-Service",
+    "sourceServiceValue": "goose-desktop"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v1/internal/runtime/handshake",
+      "purpose": "Authenticate the local DHP Goose node and exchange absolute-zero runtime capabilities.",
+      "requiresCostMode": "absolute-zero",
+      "persistsNodeRegistration": false
+    }
+  ],
+  "ownership": {
+    "businessSourceOfTruth": "dai-hai-phat-web",
+    "executionRuntime": "goose-DHP",
+    "directDatabaseAccess": false,
+    "directProductionWrite": false
+  }
+}
