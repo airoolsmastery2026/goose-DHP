@@ -1,13 +1,50 @@
-# DHP Goose first-run defaults.
-# Environment variables still take precedence over this file.
-GOOSE_PROVIDER: ollama
-GOOSE_MODEL: qwen3:1.7b
-OLLAMA_HOST: http://localhost:11434
-GOOSE_DISABLE_TELEMETRY: "1"
+# DHP Goose additional configuration.
+# Launcher environment variables override provider/model values when needed.
+active_provider: ollama
+providers:
+  ollama:
+    enabled: true
+    model: qwen3:1.7b
+    configured: true
+
+GOOSE_MODE: smart_approve
+GOOSE_DISABLE_TELEMETRY: true
+
+extensions:
+  developer:
+    bundled: true
+    enabled: true
+    name: developer
+    timeout: 300
+    type: builtin
+  memory:
+    bundled: true
+    enabled: true
+    name: memory
+    timeout: 300
+    type: builtin
+  skills:
+    bundled: true
+    enabled: true
+    name: skills
+    timeout: 300
+    type: builtin
+  todo:
+    bundled: true
+    enabled: true
+    name: todo
+    timeout: 300
+    type: builtin
+  summon:
+    bundled: true
+    enabled: true
+    name: summon
+    timeout: 300
+    type: builtin
 
 # DHP policy markers consumed by launcher/recipes.
 DHP_GOOSE_POLICY: absolute-zero
-DHP_GOOSE_PAID_PROVIDERS: "disabled"
-DHP_GOOSE_SKILL_ROUTING: "on-demand"
-DHP_GOOSE_MEMORY_MODE: "local"
-DHP_GOOSE_VERIFY_BEFORE_COMPLETE: "true"
+DHP_GOOSE_PAID_PROVIDERS: disabled
+DHP_GOOSE_SKILL_ROUTING: on-demand
+DHP_GOOSE_MEMORY_MODE: local
+DHP_GOOSE_VERIFY_BEFORE_COMPLETE: true
