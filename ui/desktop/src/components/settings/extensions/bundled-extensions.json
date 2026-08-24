@@ -11,10 +11,54 @@
     "bundled": true
   },
   {
+    "id": "memory",
+    "name": "memory",
+    "display_name": "Memory",
+    "description": "Store durable DHP lessons and preferences locally.",
+    "enabled": true,
+    "type": "builtin",
+    "env_keys": [],
+    "timeout": 300,
+    "bundled": true
+  },
+  {
+    "id": "skills",
+    "name": "skills",
+    "display_name": "Skills",
+    "description": "Load task-specific operating procedures on demand.",
+    "enabled": true,
+    "type": "builtin",
+    "env_keys": [],
+    "timeout": 300,
+    "bundled": true
+  },
+  {
+    "id": "todo",
+    "name": "todo",
+    "display_name": "Todo",
+    "description": "Track multi-step task state.",
+    "enabled": true,
+    "type": "builtin",
+    "env_keys": [],
+    "timeout": 300,
+    "bundled": true
+  },
+  {
+    "id": "summon",
+    "name": "summon",
+    "display_name": "Summon",
+    "description": "Delegate bounded sub-tasks to subagents when useful.",
+    "enabled": true,
+    "type": "builtin",
+    "env_keys": [],
+    "timeout": 300,
+    "bundled": true
+  },
+  {
     "id": "computercontroller",
     "name": "computercontroller",
     "display_name": "Computer Controller",
-    "description": "General computer control tools that don't require you to be a developer or engineer.",
+    "description": "General computer control tools that require task-scoped approval.",
     "enabled": false,
     "type": "builtin",
     "env_keys": [],
@@ -25,18 +69,7 @@
     "id": "autovisualiser",
     "name": "autovisualiser",
     "display_name": "Auto Visualiser",
-    "description": "Data visualization and UI generation tools",
-    "enabled": false,
-    "type": "builtin",
-    "env_keys": [],
-    "timeout": 300,
-    "bundled": true
-  },
-  {
-    "id": "memory",
-    "name": "memory",
-    "display_name": "Memory",
-    "description": "Teach goose your preferences as you go.",
+    "description": "Data visualization and UI generation tools.",
     "enabled": false,
     "type": "builtin",
     "env_keys": [],
@@ -47,10 +80,11 @@
     "id": "tutorial",
     "name": "tutorial",
     "display_name": "Tutorial",
-    "description": "Access interactive tutorials and guides",
+    "description": "Access interactive tutorials and guides.",
     "enabled": false,
     "type": "builtin",
     "env_keys": [],
+    "timeout": 300,
     "bundled": true
   }
 ]
