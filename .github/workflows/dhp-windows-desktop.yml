@@ -1,0 +1,116 @@
+name: "DHP Goose Desktop (Windows)"
+
+on:
+  pull_request:
+    paths:
+      - "dhp-overlay/**"
+      - "ui/desktop/forge.config.ts"
+      - ".github/workflows/dhp-windows-desktop.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-dhp-goose-windows:
+    name: Build DHP-Goose-Setup.exe
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Rust target
+        shell: bash
+        run: |
+          rustup show
+          rustup target add x86_64-pc-windows-msvc
+
+      - name: Build Goose backend
+        shell: pwsh
+        run: |
+          cargo build --release --target x86_64-pc-windows-msvc -p goose-cli --bin goose
+          $binaryPath = "./target/x86_64-pc-windows-msvc/release/goose.exe"
+          if (-not (Test-Path $binaryPath)) {
+            Write-Error "Windows Goose binary not found: $binaryPath"
+            exit 1
+          }
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.10.0
+
+      - name: Install pnpm
+        shell: pwsh
+        run: npm install -g pnpm@10.30.3
+
+      - name: Prepare desktop backend binaries
+        shell: pwsh
+        run: |
+          $binDir = "./ui/desktop/src/bin"
+          if (Test-Path $binDir) { Remove-Item -Recurse -Force $binDir }
+          New-Item -ItemType Directory -Force -Path $binDir | Out-Null
+          Copy-Item "./target/x86_64-pc-windows-msvc/release/goose.exe" "$binDir/goose.exe"
+
+          $platformBin = "./ui/desktop/src/platform/windows/bin"
+          if (Test-Path $platformBin) {
+            Get-ChildItem $platformBin -File | Where-Object {
+              $_.Name -ne "goose.exe" -and $_.Extension -in ".exe", ".dll", ".cmd"
+            } | ForEach-Object {
+              Copy-Item $_.FullName $binDir
+            }
+
+            $gooseNpm = Join-Path $platformBin "goose-npm"
+            if (Test-Path $gooseNpm) {
+              Copy-Item -Recurse $gooseNpm "$binDir/goose-npm"
+            }
+          }
+
+      - name: Force GitHub HTTPS for npm git dependencies
+        shell: bash
+        run: |
+          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config --global url."https://github.com/".insteadOf "git+ssh://git@github.com/"
+
+      - name: Install desktop dependencies
+        shell: bash
+        run: |
+          cd ui/desktop
+          pnpm install --frozen-lockfile
+
+      - name: Build DHP Windows installer
+        shell: pwsh
+        env:
+          DHP_DESKTOP_BUILD: "1"
+          DHP_DESKTOP_NAME: "DHP Goose"
+          GITHUB_OWNER: "airoolsmastery2026"
+          GITHUB_REPO: "goose-DHP"
+          GOOSE_DISABLE_TELEMETRY: "1"
+          ELECTRON_PLATFORM: "win32"
+        run: |
+          Set-Location ui/desktop
+          node scripts/build-main.js
+          node scripts/prepare-platform-binaries.js
+          pnpm run make --platform=win32 --arch=x64
+
+          $setup = Get-ChildItem -Path "./out/make" -Filter "DHP-Goose-Setup.exe" -Recurse | Select-Object -First 1
+          if (-not $setup) {
+            Write-Error "DHP-Goose-Setup.exe was not generated"
+            Get-ChildItem -Path "./out/make" -Recurse -ErrorAction SilentlyContinue
+            exit 1
+          }
+
+          New-Item -ItemType Directory -Force -Path "./dist-dhp" | Out-Null
+          Copy-Item $setup.FullName "./dist-dhp/DHP-Goose-Setup.exe"
+          Get-Item "./dist-dhp/DHP-Goose-Setup.exe"
+
+      - name: Upload DHP installer artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: DHP-Goose-Setup-x64
+          path: ui/desktop/dist-dhp/DHP-Goose-Setup.exe
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: true
