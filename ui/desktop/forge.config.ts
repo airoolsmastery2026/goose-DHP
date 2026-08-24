@@ -60,123 +60,6 @@ if (process.env.APPLE_TEAM_ID) {
   };
 }
 
-const makers = [
-  ...(isDhpDesktopBuild
-    ? [
-        {
-          name: '@electron-forge/maker-squirrel',
-          platforms: ['win32'],
-          config: {
-            name: 'DHPGoose',
-            title: dhpDesktopName,
-            authors: 'Dai Hai Phat',
-            description: 'DHP Goose Desktop - zero-dollar local AI execution runtime',
-            exe: 'DHP-Goose.exe',
-            setupExe: 'DHP-Goose-Setup.exe',
-            setupIcon: 'src/images/icon.ico',
-            noMsi: true,
-          },
-        },
-      ]
-    : []),
-  {
-    name: '@electron-forge/maker-zip',
-    platforms: ['darwin', 'win32', 'linux'],
-    config: {
-      arch: process.env.ELECTRON_ARCH === 'x64' ? ['x64'] : ['arm64'],
-      options: {
-        icon: 'src/images/icon.ico',
-      },
-    },
-  },
-  {
-    name: '@electron-forge/maker-deb',
-    config: {
-      name: 'Goose',
-      bin: 'Goose',
-      maintainer: 'AAIF (Agentic AI Foundation)',
-      homepage: 'https://goose-docs.ai/',
-      categories: ['Development'],
-      desktopTemplate: './forge.deb.desktop',
-      options: {
-        icon: 'src/images/icon.png',
-        prefix: '/opt',
-        ...(isLinuxVulkanBuild ? { depends: ['libvulkan1'] } : {}),
-      },
-    },
-  },
-  {
-    name: '@electron-forge/maker-rpm',
-    config: {
-      name: 'Goose',
-      bin: 'Goose',
-      maintainer: 'AAIF (Agentic AI Foundation)',
-      homepage: 'https://goose-docs.ai/',
-      categories: ['Development'],
-      desktopTemplate: './forge.rpm.desktop',
-      options: {
-        icon: 'src/images/icon.png',
-        prefix: '/opt',
-        ...(isLinuxVulkanBuild ? { requires: ['vulkan-loader'] } : {}),
-      },
-    },
-  },
-  {
-    name: '@electron-forge/maker-flatpak',
-    config: {
-      options: {
-        id: 'io.github.block.Goose', // NOTE: kept for backwards compat with existing installs
-        categories: ['Development'],
-        mimeType: ['x-scheme-handler/goose'],
-        icon: {
-          scalable: 'src/images/icon.svg',
-          '512x512': 'src/images/icon-512.png',
-        },
-        homepage: 'https://goose-docs.ai/',
-        runtimeVersion: '25.08',
-        baseVersion: '25.08',
-        bin: 'Goose',
-        modules: [
-          {
-            name: 'libbz2-shim',
-            buildsystem: 'simple',
-            'build-commands': [
-              // Create the lib directory in the app bundle
-              'mkdir -p /app/lib',
-              // Point to the actual library in the 25.08 runtime
-              // We use a wildcard to handle multi-arch paths (x86_64-linux-gnu, etc)
-              'ln -s $(find /usr/lib -name "libbz2.so.1" | head -n 1) /app/lib/libbz2.so.1.0',
-            ],
-          },
-          {
-            name: 'git',
-            buildsystem: 'simple',
-            'build-commands': [
-              'mkdir -p /app/bin /app/libexec/git-core',
-              'cp /usr/bin/git /app/bin/git',
-              'cp /usr/libexec/git-core/git-remote-https /app/libexec/git-core/git-remote-https 2>/dev/null || true',
-            ],
-          },
-        ],
-        finishArgs: [
-          '--share=ipc',
-          '--socket=x11',
-          '--socket=wayland',
-          '--device=dri',
-          '--share=network',
-          '--filesystem=home',
-          '--talk-name=org.freedesktop.Notifications',
-          '--socket=session-bus',
-          '--socket=system-bus',
-          // This ensures the app looks in our shim folder first
-          '--env=LD_LIBRARY_PATH=/app/lib',
-          '--env=GIT_EXEC_PATH=/app/libexec/git-core',
-        ],
-      },
-    },
-  },
-];
-
 module.exports = {
   packagerConfig: cfg,
   rebuildConfig: {},
@@ -193,7 +76,122 @@ module.exports = {
       },
     },
   ],
-  makers,
+  makers: [
+    ...(isDhpDesktopBuild
+      ? [
+          {
+            name: '@electron-forge/maker-squirrel',
+            platforms: ['win32'],
+            config: {
+              name: 'DHPGoose',
+              title: dhpDesktopName,
+              authors: 'Dai Hai Phat',
+              description: 'DHP Goose Desktop - zero-dollar local AI execution runtime',
+              exe: 'DHP-Goose.exe',
+              setupExe: 'DHP-Goose-Setup.exe',
+              setupIcon: 'src/images/icon.ico',
+              noMsi: true,
+            },
+          },
+        ]
+      : []),
+    {
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin', 'win32', 'linux'],
+      config: {
+        arch: process.env.ELECTRON_ARCH === 'x64' ? ['x64'] : ['arm64'],
+        options: {
+          icon: 'src/images/icon.ico',
+        },
+      },
+    },
+    {
+      name: '@electron-forge/maker-deb',
+      config: {
+        name: 'Goose',
+        bin: 'Goose',
+        maintainer: 'AAIF (Agentic AI Foundation)',
+        homepage: 'https://goose-docs.ai/',
+        categories: ['Development'],
+        desktopTemplate: './forge.deb.desktop',
+        options: {
+          icon: 'src/images/icon.png',
+          prefix: '/opt',
+          ...(isLinuxVulkanBuild ? { depends: ['libvulkan1'] } : {}),
+        },
+      },
+    },
+    {
+      name: '@electron-forge/maker-rpm',
+      config: {
+        name: 'Goose',
+        bin: 'Goose',
+        maintainer: 'AAIF (Agentic AI Foundation)',
+        homepage: 'https://goose-docs.ai/',
+        categories: ['Development'],
+        desktopTemplate: './forge.rpm.desktop',
+        options: {
+          icon: 'src/images/icon.png',
+          prefix: '/opt',
+          ...(isLinuxVulkanBuild ? { requires: ['vulkan-loader'] } : {}),
+        },
+      },
+    },
+    {
+      name: '@electron-forge/maker-flatpak',
+      config: {
+        options: {
+          id: 'io.github.block.Goose', // NOTE: kept for backwards compat with existing installs
+          categories: ['Development'],
+          mimeType: ['x-scheme-handler/goose'],
+          icon: {
+            scalable: 'src/images/icon.svg',
+            '512x512': 'src/images/icon-512.png',
+          },
+          homepage: 'https://goose-docs.ai/',
+          runtimeVersion: '25.08',
+          baseVersion: '25.08',
+          bin: 'Goose',
+          modules: [
+            {
+              name: 'libbz2-shim',
+              buildsystem: 'simple',
+              'build-commands': [
+                // Create the lib directory in the app bundle
+                'mkdir -p /app/lib',
+                // Point to the actual library in the 25.08 runtime
+                // We use a wildcard to handle multi-arch paths (x86_64-linux-gnu, etc)
+                'ln -s $(find /usr/lib -name "libbz2.so.1" | head -n 1) /app/lib/libbz2.so.1.0',
+              ],
+            },
+            {
+              name: 'git',
+              buildsystem: 'simple',
+              'build-commands': [
+                'mkdir -p /app/bin /app/libexec/git-core',
+                'cp /usr/bin/git /app/bin/git',
+                'cp /usr/libexec/git-core/git-remote-https /app/libexec/git-core/git-remote-https 2>/dev/null || true',
+              ],
+            },
+          ],
+          finishArgs: [
+            '--share=ipc',
+            '--socket=x11',
+            '--socket=wayland',
+            '--device=dri',
+            '--share=network',
+            '--filesystem=home',
+            '--talk-name=org.freedesktop.Notifications',
+            '--socket=session-bus',
+            '--socket=system-bus',
+            // This ensures the app looks in our shim folder first
+            '--env=LD_LIBRARY_PATH=/app/lib',
+            '--env=GIT_EXEC_PATH=/app/libexec/git-core',
+          ],
+        },
+      },
+    },
+  ],
   plugins: [
     {
       name: '@electron-forge/plugin-vite',
