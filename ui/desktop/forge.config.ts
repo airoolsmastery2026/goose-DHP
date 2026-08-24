@@ -7,6 +7,7 @@ const isDhpDesktopBuild = process.env.DHP_DESKTOP_BUILD === '1';
 const dhpDesktopName = process.env.DHP_DESKTOP_NAME || 'DHP Goose';
 
 let cfg = {
+  ...(isDhpDesktopBuild ? { name: dhpDesktopName, executableName: 'DHP-Goose' } : {}),
   asar: true,
   extraResource: ['src/bin', 'src/images', 'src/app-update.yml'],
   icon: 'src/images/icon',
@@ -44,11 +45,6 @@ let cfg = {
   },
 };
 
-if (isDhpDesktopBuild) {
-  cfg.name = dhpDesktopName;
-  cfg.executableName = 'DHP-Goose';
-}
-
 // macOS code signing and notarization via Electron Forge
 // Activated when APPLE_TEAM_ID is set (CI signing builds)
 if (process.env.APPLE_TEAM_ID) {
@@ -65,6 +61,24 @@ if (process.env.APPLE_TEAM_ID) {
 }
 
 const makers = [
+  ...(isDhpDesktopBuild
+    ? [
+        {
+          name: '@electron-forge/maker-squirrel',
+          platforms: ['win32'],
+          config: {
+            name: 'DHPGoose',
+            title: dhpDesktopName,
+            authors: 'Dai Hai Phat',
+            description: 'DHP Goose Desktop - zero-dollar local AI execution runtime',
+            exe: 'DHP-Goose.exe',
+            setupExe: 'DHP-Goose-Setup.exe',
+            setupIcon: 'src/images/icon.ico',
+            noMsi: true,
+          },
+        },
+      ]
+    : []),
   {
     name: '@electron-forge/maker-zip',
     platforms: ['darwin', 'win32', 'linux'],
@@ -162,23 +176,6 @@ const makers = [
     },
   },
 ];
-
-if (isDhpDesktopBuild) {
-  makers.unshift({
-    name: '@electron-forge/maker-squirrel',
-    platforms: ['win32'],
-    config: {
-      name: 'DHPGoose',
-      title: dhpDesktopName,
-      authors: 'Dai Hai Phat',
-      description: 'DHP Goose Desktop - zero-dollar local AI execution runtime',
-      exe: 'DHP-Goose.exe',
-      setupExe: 'DHP-Goose-Setup.exe',
-      setupIcon: 'src/images/icon.ico',
-      noMsi: true,
-    },
-  });
-}
 
 module.exports = {
   packagerConfig: cfg,
