@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$DistroRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$DistroRoot = Split-Path $PSScriptRoot -Parent
 
 $RequiredFiles = @(
     "README.md",
